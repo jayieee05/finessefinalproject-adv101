@@ -119,51 +119,46 @@ export default function Footer() {
           {/* Newsletter */}
           <div className="footer-newsletter">
             <h4 
-              className="text-lg font-semibold mb-4"
+              className="footer-newsletter-title"
               style={{
                 color: 'var(--color-background)',
-                marginBottom: '2rem',
-                fontSize: '2rem',
-                fontFamily: 'var(--font-cormorant-garamond)'
+                marginBottom: '1rem',
+                fontSize: '2.4rem',
+                fontFamily: 'var(--font-cormorant-garamond)',
+                fontWeight: '600',
+                letterSpacing: '0.2px',
+                lineHeight: '1.3'
               }}
             >
               Stay Updated
             </h4>
             <p 
-              className="mb-4 text-sm"
+              className="footer-newsletter-description"
               style={{
-                marginBottom: '2rem',
-                color: 'rgba(255, 255, 255, 0.7)',
-                fontSize: '1.4rem'
+                marginBottom: '2.4rem',
+                color: 'rgba(255, 255, 255, 0.75)',
+                fontSize: '1.4rem',
+                lineHeight: '1.6',
+                fontFamily: 'var(--font-montserrat)',
+                fontWeight: '300'
               }}
             >
               Subscribe to our newsletter for exclusive offers and updates
             </p>
-            <form onSubmit={handleNewsletterSubmit} className="flex flex-col">
-              <input
-                type="email"
-                placeholder="Your email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="px-4 py-3 mb-2"
-                style={{
-                  padding: '1.2rem',
-                  border: 'none',
-                  fontFamily: 'var(--font-montserrat)',
-                  fontSize: '1.4rem'
-                }}
-              />
+            <form onSubmit={handleNewsletterSubmit} className="newsletter-form">
+              <div className="newsletter-input-wrapper">
+                <input
+                  type="email"
+                  placeholder="Your email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="newsletter-input"
+                />
+              </div>
               <button
                 type="submit"
-                className="btn-primary px-6 py-3 font-medium"
-                style={{
-                  padding: '0 2rem',
-                  fontSize: '1.4rem',
-                  fontWeight: '500',
-                  border: 'none',
-                  cursor: 'pointer'
-                }}
+                className="newsletter-submit-btn"
               >
                 Subscribe
               </button>

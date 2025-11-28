@@ -11,15 +11,15 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-white shadow-sm" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)' }}>
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between py-4 relative">
+        <div className="flex items-center justify-between py-3 relative" style={{ minHeight: '100px' }}>
           {/* Logo */}
           <div className="logo flex-shrink-0">
             <Link href="/" className="header-logo">
               <Image 
                 src={`/assets/logo.png?v=${logoVersion}`}
                 alt="Finesse Logo" 
-                width={80} 
-                height={80}
+                width={100} 
+                height={100}
                 className="header-logo-img"
                 unoptimized
                 priority
