@@ -171,11 +171,41 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Login and Signup Button Styles */
 .login-link {
+  position: relative;
   transition: color 0.3s ease;
+  display: inline-block;
+}
+
+.login-link::before {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--color-primary);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.login-link::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  right: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--color-primary);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .login-link:hover {
   color: var(--color-primary);
+  transform: translateY(-2px);
+}
+
+.login-link:hover::before,
+.login-link:hover::after {
+  width: 50%;
 }
 
 .signup-btn {
