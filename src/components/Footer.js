@@ -3,15 +3,66 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
+  const router = useRouter();
+  const pathname = usePathname();
 
   const handleNewsletterSubmit = (e) => {
     e.preventDefault();
     console.log('Newsletter subscription:', email);
     setEmail('');
     alert('Thank you for subscribing!');
+  };
+
+  const handleCategoryClick = (e, category) => {
+    const categoryPath = `/shop?category=${category.toLowerCase()}`;
+    
+    // If already on shop page, prevent default and handle scroll
+    if (pathname === '/shop') {
+      e.preventDefault();
+      
+      // Update URL without navigation
+      window.history.pushState({}, '', categoryPath);
+      
+      // Scroll to search bar immediately
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const searchBar = document.querySelector('.search-bar-modern');
+          if (searchBar) {
+            const elementPosition = searchBar.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - 120;
+            
+            window.scrollTo({
+              top: Math.max(0, offsetPosition),
+              behavior: 'smooth'
+            });
+          }
+        });
+      });
+      
+      // Trigger a custom event to update the category in ShopContent
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    } else {
+      // If not on shop page, navigate normally and scroll after navigation
+      router.push(categoryPath);
+      
+      // Wait for navigation to complete, then scroll
+      setTimeout(() => {
+        const searchBar = document.querySelector('.search-bar-modern');
+        if (searchBar) {
+          const elementPosition = searchBar.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - 120;
+          
+          window.scrollTo({
+            top: Math.max(0, offsetPosition),
+            behavior: 'smooth'
+          });
+        }
+      }, 100);
+    }
   };
 
   return (
@@ -92,6 +143,7 @@ export default function Footer() {
                 <li key={item} style={{ marginBottom: '1.2rem' }}>
                   <Link 
                     href={`/shop?category=${item.toLowerCase()}`}
+                    onClick={(e) => handleCategoryClick(e, item)}
                     className="footer-link inline-block relative group"
                     style={{ 
                       color: 'rgba(255, 255, 255, 0.75)',

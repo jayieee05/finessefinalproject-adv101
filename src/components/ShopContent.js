@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ShopSidebar from './ShopSidebar';
 import ProductGrid from './ProductGrid';
@@ -34,10 +34,36 @@ export default function ShopContent() {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 12;
+  const hasScrolledRef = useRef(false);
+  const previousCategoryRef = useRef('all');
+
   useEffect(() => {
     const category = searchParams.get('category') || 'all';
+    const categoryChanged = previousCategoryRef.current !== category;
+    previousCategoryRef.current = category;
+    
     setSelectedCategory(category);
     setCurrentPage(1);
+
+    // Scroll to search bar when category changes (but not on initial mount)
+    if (categoryChanged && hasScrolledRef.current) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const searchBar = document.querySelector('.search-bar-modern');
+          if (searchBar) {
+            const elementPosition = searchBar.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - 120;
+            
+            window.scrollTo({
+              top: Math.max(0, offsetPosition),
+              behavior: 'smooth'
+            });
+          }
+        });
+      });
+    } else {
+      hasScrolledRef.current = true;
+    }
   }, [searchParams]);
 
   const filteredProducts = products.filter(product => {
