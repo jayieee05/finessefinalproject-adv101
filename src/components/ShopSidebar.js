@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import ScrollAnimation from './ScrollAnimation';
 
 const categories = [
   { id: 'all', name: 'All Products' },
@@ -12,55 +13,30 @@ const categories = [
 
 export default function ShopSidebar({ selectedCategory, onCategoryChange }) {
   return (
-    <aside className="shop-sidebar">
-      <div className="filter-section">
-        <h3 
-          className="filter-title"
-          style={{
-            fontFamily: 'var(--font-cormorant-garamond)',
-            fontSize: '2.4rem',
-            color: 'var(--color-secondary)',
-            fontWeight: '600',
-            marginBottom: '2rem',
-            paddingBottom: '1rem',
-            borderBottom: '1px solid var(--color-border)'
-          }}
-        >
-          Categories
-        </h3>
-        <ul className="filter-list filter-list-responsive" style={{ listStyle: 'none', padding: 0 }}>
+    <aside className="shop-sidebar-modern">
+      <div className="filter-section-modern">
+        <ScrollAnimation animation="fadeInUp" delay={0.1} duration={0.6}>
+          <h3 className="filter-title-modern">
+            Categories
+          </h3>
+        </ScrollAnimation>
+        <ul className="filter-list-modern">
           {categories.map((category) => (
-            <li key={category.id} style={{ marginBottom: '1rem' }}>
+            <li key={category.id}>
               <Link
                 href={`/shop?category=${category.id}`}
-                onClick={() => onCategoryChange(category.id)}
-                className="filter-link"
-                style={{
-                  display: 'block',
-                  padding: '0.8rem 1rem',
-                  color: selectedCategory === category.id ? 'var(--color-primary)' : 'var(--color-text)',
-                  fontFamily: 'var(--font-montserrat)',
-                  fontSize: '1.5rem',
-                  textDecoration: 'none',
-                  transition: 'all 0.3s ease',
-                  borderLeft: selectedCategory === category.id ? '3px solid var(--color-primary)' : '3px solid transparent',
-                  backgroundColor: selectedCategory === category.id ? 'rgba(200, 169, 126, 0.1)' : 'transparent',
-                  borderRadius: '4px'
+                onClick={(e) => {
+                  e.preventDefault();
+                  onCategoryChange(category.id);
+                  // Update URL without scrolling
+                  window.history.pushState({}, '', `/shop?category=${category.id}`);
                 }}
-                onMouseEnter={(e) => {
-                  if (selectedCategory !== category.id) {
-                    e.target.style.color = 'var(--color-primary)';
-                    e.target.style.backgroundColor = 'rgba(200, 169, 126, 0.05)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (selectedCategory !== category.id) {
-                    e.target.style.color = 'var(--color-text)';
-                    e.target.style.backgroundColor = 'transparent';
-                  }
-                }}
+                className={`filter-link-modern ${selectedCategory === category.id ? 'active' : ''}`}
               >
-                {category.name}
+                <span className="filter-link-text">{category.name}</span>
+                {selectedCategory === category.id && (
+                  <span className="filter-link-indicator"></span>
+                )}
               </Link>
             </li>
           ))}
