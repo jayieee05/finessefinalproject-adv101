@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import ScrollAnimation from './ScrollAnimation';
 
 const categories = [
   {
@@ -26,77 +27,97 @@ const categories = [
 
 export default function FeaturedCategories() {
   return (
-    <section className="featured-categories py-16 bg-white" style={{ padding: '8rem 2rem' }}>
+    <section 
+      className="featured-categories py-16" 
+      style={{ 
+        padding: 'clamp(4rem, 8vw, 10rem) clamp(1rem, 4vw, 2rem)',
+        background: 'linear-gradient(180deg, #ffffff 0%, #fafafa 100%)'
+      }}
+    >
       <div className="container mx-auto px-4">
-        <h2 
-          className="section-title text-4xl font-serif font-bold text-center mb-12" 
-          style={{ 
-            fontFamily: 'var(--font-cormorant-garamond)',
-            fontSize: '3.6rem',
-            color: 'var(--color-secondary)',
-            marginBottom: '4rem',
-            position: 'relative',
-            paddingBottom: '1.5rem'
-          }}
-        >
-          Our Collections
-          <span 
-            className="absolute bottom-0 left-1/2 transform -translate-x-1/2"
+        {/* Section Header */}
+        <ScrollAnimation animation="fadeInUp" delay={0.1}>
+          <div className="text-center mb-12 md:mb-16">
+          <p 
+            className="text-sm uppercase tracking-widest mb-4"
             style={{
-              width: '6rem',
-              height: '2px',
-              backgroundColor: 'var(--color-primary)'
+              color: 'var(--color-primary)',
+              fontSize: 'clamp(1rem, 2vw, 1.2rem)',
+              letterSpacing: '0.3em',
+              fontFamily: 'var(--font-montserrat)',
+              fontWeight: '500',
+              marginBottom: '1.5rem'
             }}
-          ></span>
-        </h2>
-        <div className="category-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {categories.map((category) => (
-            <div 
-              key={category.name} 
-              className="category-card text-center"
+          >
+            Explore Our
+          </p>
+          <h2 
+            className="section-title text-4xl font-serif font-bold text-center" 
+            style={{ 
+              fontFamily: 'var(--font-cormorant-garamond)',
+              fontSize: 'clamp(2.8rem, 5vw, 4.8rem)',
+              color: 'var(--color-secondary)',
+              marginBottom: '2rem',
+              position: 'relative',
+              paddingBottom: '2rem',
+              lineHeight: '1.2'
+            }}
+          >
+            Our Collections
+            <span 
+              className="absolute bottom-0 left-1/2 transform -translate-x-1/2"
               style={{
-                border: '1px solid #ddd',
-                padding: '1.5rem',
-                borderRadius: '8px',
-                transition: 'transform 0.3s'
+                width: '8rem',
+                height: '3px',
+                background: 'linear-gradient(90deg, transparent, var(--color-primary), transparent)',
+                borderRadius: '2px'
               }}
-            >
-              <div className="mb-4 overflow-hidden">
+            ></span>
+          </h2>
+          </div>
+        </ScrollAnimation>
+
+        {/* Category Grid */}
+        <ScrollAnimation animation="fadeInUp" delay={0.2}>
+          <div className="category-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+            {categories.map((category, index) => (
+              <ScrollAnimation 
+                key={category.name}
+                animation="fadeInScale" 
+                delay={index * 0.1}
+                duration={0.5}
+              >
+                <div className="category-card-modern text-center group relative">
+              {/* Image Container */}
+              <div className="category-image-wrapper mb-6">
                 <Image
                   src={category.image}
                   alt={`${category.name} Collection`}
-                  width={300}
-                  height={300}
-                  className="w-full h-auto object-cover"
-                  style={{ marginBottom: '2rem' }}
+                  width={400}
+                  height={400}
+                  className="category-image"
+                  unoptimized
                 />
               </div>
-              <h3 
-                className="text-2xl font-serif font-semibold mb-4" 
-                style={{ 
-                  fontFamily: 'var(--font-cormorant-garamond)',
-                  fontSize: '2.4rem',
-                  color: 'var(--color-secondary)',
-                  marginBottom: '1.5rem'
-                }}
-              >
+
+              {/* Category Name */}
+              <h3 className="category-name">
                 {category.name}
               </h3>
+
+              {/* CTA Button */}
               <Link
                 href={category.link}
-                className="btn-secondary inline-block px-6 py-3 uppercase tracking-wider font-medium"
-                style={{
-                  padding: '1.2rem 2.4rem',
-                  fontSize: '1.4rem',
-                  letterSpacing: '1px',
-                  fontWeight: '500'
-                }}
+                className="category-btn"
               >
-                View Collection
+                <span className="category-btn-text">View Collection</span>
+                <span className="category-btn-fill"></span>
               </Link>
-            </div>
-          ))}
-        </div>
+                </div>
+              </ScrollAnimation>
+            ))}
+          </div>
+        </ScrollAnimation>
       </div>
     </section>
   );
