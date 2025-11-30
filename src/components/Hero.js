@@ -5,7 +5,7 @@ export default function Hero() {
     <section 
       className="hero relative min-h-[90vh] flex items-center justify-center text-center overflow-hidden"
       style={{ 
-        marginTop: '8rem',
+        marginTop: '6.5rem',
         backgroundImage: 'url(/assets/hero-bg.svg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center center',
