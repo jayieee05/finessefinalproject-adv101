@@ -63,6 +63,8 @@ export default function ScrollAnimation({
         return 'translateY(30px)';
       case 'fadeInScale':
         return 'scale(0.95)';
+      case 'popUp':
+        return 'scale(0.8) translateY(20px)';
       case 'slideInLeft':
         return 'translateX(-30px)';
       case 'slideInRight':
@@ -80,6 +82,8 @@ export default function ScrollAnimation({
         return 'translateY(0)';
       case 'fadeInScale':
         return 'scale(1)';
+      case 'popUp':
+        return 'scale(1) translateY(0)';
       case 'slideInLeft':
       case 'slideInRight':
         return 'translateX(0)';
@@ -97,7 +101,9 @@ export default function ScrollAnimation({
       style={{
         opacity: isVisible ? 1 : 0,
         transform: isVisible ? getFinalTransform() : getInitialTransform(),
-        transition: `opacity ${duration}s ease-out ${delay}s, transform ${duration}s cubic-bezier(0.4, 0, 0.2, 1) ${delay}s`,
+        transition: animation === 'popUp' 
+          ? `opacity ${duration}s ease-out ${delay}s, transform ${duration}s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}s`
+          : `opacity ${duration}s ease-out ${delay}s, transform ${duration}s cubic-bezier(0.4, 0, 0.2, 1) ${delay}s`,
         willChange: 'opacity, transform'
       }}
     >
