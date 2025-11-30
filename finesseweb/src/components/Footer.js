@@ -16,101 +16,151 @@ export default function Footer() {
 
   return (
     <footer 
-      className="text-white py-12"
+      className="text-white py-12 relative overflow-hidden"
       style={{
-        backgroundColor: 'var(--color-secondary)',
+        background: 'linear-gradient(180deg, var(--color-secondary) 0%, #2a2118 100%)',
         color: 'var(--color-background)',
-        padding: '6rem 0 3rem'
+        padding: '8rem 0 4rem',
+        position: 'relative'
       }}
     >
-      <div className="container mx-auto px-4">
-        <div className="footer-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8" style={{ gap: '4rem', marginBottom: '4rem' }}>
+      {/* Decorative Top Border */}
+      <div 
+        className="absolute top-0 left-0 right-0 h-px"
+        style={{
+          background: 'linear-gradient(90deg, transparent 0%, var(--color-primary) 50%, transparent 100%)',
+          height: '2px'
+        }}
+      ></div>
+      
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="footer-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8" style={{ gap: '5rem', marginBottom: '5rem' }}>
           {/* Footer Logo */}
           <div className="footer-logo">
-            <Image
-              src="/assets/logo.png"
-              alt="Logo"
-              width={200}
-              height={80}
-              className="h-auto mb-4"
-              style={{ width: '200px', height: 'auto', marginBottom: '20px' }}
-            />
+            <Link href="/" className="inline-block transition-transform duration-300 hover:scale-105">
+              <Image
+                src="/assets/logo.png"
+                alt="Finesse Logo"
+                width={220}
+                height={88}
+                className="h-auto mb-6"
+                style={{ width: '220px', height: 'auto', marginBottom: '2.5rem', filter: 'brightness(1.1)' }}
+                unoptimized
+              />
+            </Link>
+            <p 
+              className="text-sm leading-relaxed"
+              style={{
+                color: 'rgba(255, 255, 255, 0.7)',
+                fontSize: '1.4rem',
+                lineHeight: '1.8',
+                fontFamily: 'var(--font-montserrat)',
+                fontWeight: '300',
+                maxWidth: '280px'
+              }}
+            >
+              Crafting timeless elegance, one piece at a time.
+            </p>
           </div>
 
           {/* Shop Links */}
           <div className="footer-links">
             <h4 
-              className="text-lg font-semibold mb-4"
+              className="text-lg font-semibold mb-6 relative"
               style={{
                 color: 'var(--color-background)',
-                marginBottom: '2rem',
-                fontSize: '2rem',
-                fontFamily: 'var(--font-cormorant-garamond)'
+                marginBottom: '2.5rem',
+                fontSize: '2.2rem',
+                fontFamily: 'var(--font-cormorant-garamond)',
+                fontWeight: '600',
+                letterSpacing: '0.5px'
               }}
             >
               Shop
+              <span 
+                className="absolute bottom-0 left-0 h-0.5"
+                style={{
+                  width: '3rem',
+                  height: '2px',
+                  backgroundColor: 'var(--color-primary)',
+                  marginTop: '1rem'
+                }}
+              ></span>
             </h4>
-            <ul className="space-y-2">
-              <li style={{ marginBottom: '1rem' }}>
-                <Link 
-                  href="/shop?category=rings" 
-                  className="footer-link"
-                  style={{ color: 'rgba(255, 255, 255, 0.7)' }}
-                >
-                  Rings
-                </Link>
-              </li>
-              <li style={{ marginBottom: '1rem' }}>
-                <Link 
-                  href="/shop?category=necklaces" 
-                  className="footer-link"
-                  style={{ color: 'rgba(255, 255, 255, 0.7)' }}
-                >
-                  Necklaces
-                </Link>
-              </li>
-              <li style={{ marginBottom: '1rem' }}>
-                <Link 
-                  href="/shop?category=earrings" 
-                  className="footer-link"
-                  style={{ color: 'rgba(255, 255, 255, 0.7)' }}
-                >
-                  Earrings
-                </Link>
-              </li>
-              <li style={{ marginBottom: '1rem' }}>
-                <Link 
-                  href="/shop?category=bracelets" 
-                  className="footer-link"
-                  style={{ color: 'rgba(255, 255, 255, 0.7)' }}
-                >
-                  Bracelets
-                </Link>
-              </li>
+            <ul className="space-y-3">
+              {['Rings', 'Necklaces', 'Earrings', 'Bracelets'].map((item, index) => (
+                <li key={item} style={{ marginBottom: '1.2rem' }}>
+                  <Link 
+                    href={`/shop?category=${item.toLowerCase()}`}
+                    className="footer-link inline-block relative group"
+                    style={{ 
+                      color: 'rgba(255, 255, 255, 0.75)',
+                      fontSize: '1.5rem',
+                      fontFamily: 'var(--font-montserrat)',
+                      fontWeight: '400',
+                      transition: 'all 0.3s ease',
+                      paddingLeft: '0'
+                    }}
+                  >
+                    <span className="relative z-10">{item}</span>
+                    <span 
+                      className="absolute left-0 bottom-0 w-0 h-0.5 bg-gradient-to-r from-transparent via-var(--color-primary) to-transparent group-hover:w-full transition-all duration-300"
+                      style={{
+                        backgroundColor: 'var(--color-primary)',
+                        height: '2px'
+                      }}
+                    ></span>
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Company Links */}
           <div className="footer-links">
             <h4 
-              className="text-lg font-semibold mb-4"
+              className="text-lg font-semibold mb-6 relative"
               style={{
                 color: 'var(--color-background)',
-                marginBottom: '2rem',
-                fontSize: '2rem',
-                fontFamily: 'var(--font-cormorant-garamond)'
+                marginBottom: '2.5rem',
+                fontSize: '2.2rem',
+                fontFamily: 'var(--font-cormorant-garamond)',
+                fontWeight: '600',
+                letterSpacing: '0.5px'
               }}
             >
               Company
+              <span 
+                className="absolute bottom-0 left-0 h-0.5"
+                style={{
+                  width: '3rem',
+                  height: '2px',
+                  backgroundColor: 'var(--color-primary)',
+                  marginTop: '1rem'
+                }}
+              ></span>
             </h4>
-            <ul className="space-y-2">
-              <li style={{ marginBottom: '1rem' }}>
+            <ul className="space-y-3">
+              <li style={{ marginBottom: '1.2rem' }}>
                 <Link 
                   href="/about" 
-                  className="footer-link"
-                  style={{ color: 'rgba(255, 255, 255, 0.7)' }}
+                  className="footer-link inline-block relative group"
+                  style={{ 
+                    color: 'rgba(255, 255, 255, 0.75)',
+                    fontSize: '1.5rem',
+                    fontFamily: 'var(--font-montserrat)',
+                    fontWeight: '400',
+                    transition: 'all 0.3s ease'
+                  }}
                 >
-                  About Us
+                  <span className="relative z-10">About Us</span>
+                  <span 
+                    className="absolute left-0 bottom-0 w-0 h-0.5 bg-gradient-to-r from-transparent via-var(--color-primary) to-transparent group-hover:w-full transition-all duration-300"
+                    style={{
+                      backgroundColor: 'var(--color-primary)',
+                      height: '2px'
+                    }}
+                  ></span>
                 </Link>
               </li>
             </ul>
@@ -119,26 +169,35 @@ export default function Footer() {
           {/* Newsletter */}
           <div className="footer-newsletter">
             <h4 
-              className="footer-newsletter-title"
+              className="footer-newsletter-title relative mb-4"
               style={{
                 color: 'var(--color-background)',
-                marginBottom: '1rem',
+                marginBottom: '1.5rem',
                 fontSize: '2.4rem',
                 fontFamily: 'var(--font-cormorant-garamond)',
                 fontWeight: '600',
-                letterSpacing: '0.2px',
+                letterSpacing: '0.3px',
                 lineHeight: '1.3'
               }}
             >
               Stay Updated
+              <span 
+                className="absolute bottom-0 left-0 h-0.5"
+                style={{
+                  width: '3rem',
+                  height: '2px',
+                  backgroundColor: 'var(--color-primary)',
+                  marginTop: '1rem'
+                }}
+              ></span>
             </h4>
             <p 
               className="footer-newsletter-description"
               style={{
-                marginBottom: '2.4rem',
-                color: 'rgba(255, 255, 255, 0.75)',
-                fontSize: '1.4rem',
-                lineHeight: '1.6',
+                marginBottom: '2.5rem',
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontSize: '1.5rem',
+                lineHeight: '1.7',
                 fontFamily: 'var(--font-montserrat)',
                 fontWeight: '300'
               }}
@@ -170,49 +229,62 @@ export default function Footer() {
         <div 
           className="footer-bottom pt-8 flex flex-col md:flex-row justify-between items-center"
           style={{
-            paddingTop: '3rem',
-            borderTop: '1px solid rgba(255, 255, 255, 0.1)'
+            paddingTop: '4rem',
+            borderTop: '1px solid rgba(255, 255, 255, 0.15)',
+            marginTop: '2rem'
           }}
         >
-          <div className="social-icons flex space-x-4 mb-4 md:mb-0" style={{ gap: '2rem' }}>
+          <div className="social-icons flex space-x-4 mb-6 md:mb-0" style={{ gap: '1.5rem' }}>
             <a
               href="https://www.instagram.com/the.finesse_mc/"
               target="_blank"
               rel="noopener noreferrer"
-              className="social-icon flex items-center justify-center"
+              className="social-icon-instagram flex items-center justify-center group relative"
               style={{
-                width: '4rem',
-                height: '4rem',
+                width: '4.5rem',
+                height: '4.5rem',
                 borderRadius: '50%',
-                backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                backdropFilter: 'blur(10px)',
+                padding: '0.8rem'
               }}
             >
               <Image
                 src="/assets/instagram.svg"
                 alt="Instagram"
-                width={20}
-                height={20}
-                className="filter invert"
+                width={28}
+                height={28}
+                className="transition-transform duration-300 group-hover:scale-110"
+                style={{ transition: 'transform 0.3s ease', filter: 'none' }}
+                unoptimized
               />
             </a>
             <a
               href="https://www.facebook.com/profile.php?id=100093146019011"
               target="_blank"
               rel="noopener noreferrer"
-              className="social-icon flex items-center justify-center"
+              className="social-icon-facebook flex items-center justify-center group relative"
               style={{
-                width: '4rem',
-                height: '4rem',
+                width: '4.5rem',
+                height: '4.5rem',
                 borderRadius: '50%',
-                backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                backdropFilter: 'blur(10px)',
+                padding: '0.8rem'
               }}
             >
               <Image
                 src="/assets/facebook.svg"
                 alt="Facebook"
-                width={20}
-                height={20}
-                className="filter invert"
+                width={28}
+                height={28}
+                className="transition-transform duration-300 group-hover:scale-110"
+                style={{ transition: 'transform 0.3s ease', filter: 'none' }}
+                unoptimized
               />
             </a>
           </div>
@@ -221,7 +293,10 @@ export default function Footer() {
             style={{
               color: 'rgba(255, 255, 255, 0.7)',
               marginBottom: '0',
-              fontSize: '1.4rem'
+              fontSize: '1.4rem',
+              fontFamily: 'var(--font-montserrat)',
+              fontWeight: '300',
+              letterSpacing: '0.3px'
             }}
           >
             © 2025 Finesse Collection. All rights reserved.
