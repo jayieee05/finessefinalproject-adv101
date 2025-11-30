@@ -1243,8 +1243,26 @@ h1, h2, h3, h4, h5, h6 {
 
 .search-icon {
   padding: 0 1rem;
-  font-size: 1.6rem;
-  opacity: 0.6;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  opacity: 0.7;
+  color: #666666;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  display: block;
+  pointer-events: none;
+}
+
+.search-bar-modern:focus-within .search-icon {
+  opacity: 1;
+  color: rgba(200, 169, 126, 0.9);
+  transform: scale(1.1);
 }
 
 .search-input-modern {
@@ -1629,11 +1647,11 @@ h1, h2, h3, h4, h5, h6 {
 /* Modern About Hero Styles */
 .about-hero-modern {
   position: relative;
-  min-height: clamp(50vh, 60vw, 70vh);
+  min-height: clamp(40vh, 50vw, 60vh);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(6rem, 12vw, 12rem) 0;
+  padding: clamp(5rem, 10vw, 10rem) 0;
   overflow: hidden;
   background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
 }
@@ -2109,7 +2127,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Modern About Hero Responsive */
 @media (max-width: 1024px) {
   .about-hero-modern {
-    min-height: clamp(45vh, 55vw, 60vh);
+    min-height: clamp(40vh, 50vw, 60vh);
     padding: clamp(5rem, 10vw, 10rem) 0;
   }
   
@@ -2120,8 +2138,8 @@ h1, h2, h3, h4, h5, h6 {
 
 @media (max-width: 768px) {
   .about-hero-modern {
-    min-height: clamp(40vh, 50vw, 55vh);
-    padding: clamp(4rem, 8vw, 8rem) 0;
+    min-height: clamp(40vh, 50vw, 60vh);
+    padding: clamp(5rem, 10vw, 10rem) 0;
   }
   
   .about-hero-content-modern {
@@ -2150,8 +2168,8 @@ h1, h2, h3, h4, h5, h6 {
 
 @media (max-width: 480px) {
   .about-hero-modern {
-    min-height: clamp(35vh, 45vw, 50vh);
-    padding: clamp(3rem, 6vw, 6rem) 0;
+    min-height: clamp(40vh, 50vw, 60vh);
+    padding: clamp(5rem, 10vw, 10rem) 0;
   }
   
   .about-hero-badge {
@@ -3524,5 +3542,251 @@ h1, h2, h3, h4, h5, h6 {
   
   .related-products .product-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Skeleton Loader Styles */
+.skeleton-loader {
+  background: linear-gradient(
+    90deg,
+    rgba(240, 240, 240, 0.8) 0%,
+    rgba(230, 230, 230, 0.9) 50%,
+    rgba(240, 240, 240, 0.8) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.8s ease-in-out infinite;
+  border-radius: 8px;
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  will-change: background-position;
+}
+
+.skeleton-loader::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: skeleton-shine 1.8s ease-in-out infinite;
+}
+
+/* Skeleton Types */
+.skeleton-text {
+  height: 1rem;
+  border-radius: 4px;
+}
+
+.skeleton-title {
+  height: 2.5rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.skeleton-heading {
+  height: 2rem;
+  border-radius: 4px;
+  margin-bottom: 0.8rem;
+}
+
+.skeleton-paragraph {
+  height: 1.2rem;
+  border-radius: 4px;
+  margin-bottom: 0.8rem;
+}
+
+.skeleton-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
+
+.skeleton-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}
+
+.skeleton-button {
+  height: 3rem;
+  border-radius: 8px;
+}
+
+.skeleton-card {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}
+
+.skeleton-thumbnail {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+}
+
+/* Skeleton Variants */
+.skeleton-default {
+  background: linear-gradient(
+    90deg,
+    rgba(240, 240, 240, 0.8) 0%,
+    rgba(230, 230, 230, 0.9) 50%,
+    rgba(240, 240, 240, 0.8) 100%
+  );
+}
+
+.skeleton-light {
+  background: linear-gradient(
+    90deg,
+    rgba(250, 250, 250, 0.9) 0%,
+    rgba(245, 245, 245, 0.95) 50%,
+    rgba(250, 250, 250, 0.9) 100%
+  );
+}
+
+.skeleton-dark {
+  background: linear-gradient(
+    90deg,
+    rgba(200, 200, 200, 0.7) 0%,
+    rgba(180, 180, 180, 0.8) 50%,
+    rgba(200, 200, 200, 0.7) 100%
+  );
+}
+
+.skeleton-primary {
+  background: linear-gradient(
+    90deg,
+    rgba(200, 169, 126, 0.1) 0%,
+    rgba(200, 169, 126, 0.2) 50%,
+    rgba(200, 169, 126, 0.1) 100%
+  );
+}
+
+/* Skeleton Modifiers */
+.skeleton-rounded {
+  border-radius: 12px;
+}
+
+.skeleton-circle {
+  border-radius: 50%;
+}
+
+/* Skeleton Group */
+.skeleton-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Product Detail Specific Skeletons */
+.skeleton-product-image {
+  width: 100%;
+  height: 600px;
+  border-radius: 16px;
+  margin-bottom: 0;
+}
+
+.skeleton-price {
+  height: 2rem;
+  width: 30%;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.skeleton-rating {
+  height: 1.5rem;
+  width: 150px;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+}
+
+.skeleton-description {
+  height: 1.2rem;
+  border-radius: 4px;
+  margin-bottom: 0.8rem;
+}
+
+.skeleton-description:last-child {
+  width: 80%;
+}
+
+.skeleton-label {
+  height: 1.5rem;
+  width: 100px;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  margin-top: 2rem;
+}
+
+.skeleton-add-cart {
+  height: 3.5rem;
+  width: 100%;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+/* Animations */
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes skeleton-shine {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Enhanced Skeleton with Pulse Effect */
+.skeleton-loader::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: skeleton-pulse 2s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Responsive Skeleton */
+@media (max-width: 640px) {
+  .skeleton-product-image {
+    height: 400px;
+  }
+  
+  .skeleton-title {
+    height: 2rem;
+  }
+  
+  .skeleton-price {
+    height: 1.8rem;
   }
 }

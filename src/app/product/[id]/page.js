@@ -6,105 +6,112 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-
-// Product data - in a real app, this would come from an API
-const products = {
-  1: {
-    id: 1,
-    name: 'Ring Of Leaves',
-    image: '/assets/products/product-1-large.jpg',
-    price: '₱11,333',
-    priceValue: 11333,
-    category: 'rings',
-    description: 'A graceful ring with tiny, detailed leaves wrapping softly around the band. It\'s a beautiful piece that brings a touch of nature-inspired charm to your everyday style.',
-    rating: 4.5,
-    reviewCount: 45,
-    material: 'Gold',
-    tags: ['Minimalist', 'Stackable', 'Everyday'],
-    sizes: [5, 6, 7, 8, 9],
-    defaultSize: 7
-  },
-  2: {
-    id: 2,
-    name: 'Simple Chain Ring',
-    image: '/assets/products/product-2-large.jpg',
-    price: '₱5,666',
-    priceValue: 5666,
-    category: 'rings',
-    description: 'A simple and elegant chain ring perfect for everyday wear.',
-    rating: 4.3,
-    reviewCount: 32,
-    material: 'Gold',
-    tags: ['Minimalist', 'Simple', 'Everyday'],
-    sizes: [5, 6, 7, 8, 9],
-    defaultSize: 7
-  },
-  3: {
-    id: 3,
-    name: 'Tiara Ring',
-    image: '/assets/products/product-3-large.jpg',
-    price: '₱8,500',
-    priceValue: 8500,
-    category: 'rings',
-    description: 'An elegant tiara-inspired ring that adds sophistication to any look.',
-    rating: 4.7,
-    reviewCount: 28,
-    material: 'Gold',
-    tags: ['Elegant', 'Statement', 'Formal'],
-    sizes: [5, 6, 7, 8, 9],
-    defaultSize: 7
-  },
-  4: {
-    id: 4,
-    name: 'Rose Ring',
-    image: '/assets/products/product-4-large.jpg',
-    price: '₱5,666',
-    priceValue: 5666,
-    category: 'rings',
-    description: 'A delicate ring featuring a beautiful rose design.',
-    rating: 4.4,
-    reviewCount: 41,
-    material: 'Gold',
-    tags: ['Delicate', 'Floral', 'Romantic'],
-    sizes: [5, 6, 7, 8, 9],
-    defaultSize: 7
-  },
-  5: {
-    id: 5,
-    name: 'Signet Ring',
-    image: '/assets/products/product-5-large.jpg',
-    price: '₱5,666',
-    priceValue: 5666,
-    category: 'rings',
-    description: 'A classic signet ring with timeless appeal.',
-    rating: 4.6,
-    reviewCount: 19,
-    material: 'Gold',
-    tags: ['Classic', 'Timeless', 'Formal'],
-    sizes: [5, 6, 7, 8, 9],
-    defaultSize: 7
-  }
-};
+import SkeletonLoader from '@/components/SkeletonLoader';
 
 export default function ProductDetail() {
   const params = useParams();
   const router = useRouter();
   const productId = parseInt(params.id);
-  const product = products[productId];
 
-  const [selectedSize, setSelectedSize] = useState(product?.defaultSize || 7);
+  const [product, setProduct] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [selectedSize, setSelectedSize] = useState(7);
   const [selectedMaterial, setSelectedMaterial] = useState('Gold');
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!product) {
-      router.push('/shop');
-    }
-  }, [product, router]);
+    const fetchProduct = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(`/api/products?id=${productId}`);
+        
+        if (!response.ok) {
+          throw new Error('Product not found');
+        }
+        
+        const productData = await response.json();
+        setProduct(productData);
+        setSelectedSize(productData.defaultSize || 7);
+        
+        // Fetch related products
+        const relatedResponse = await fetch(`/api/products?category=${productData.category}`);
+        if (relatedResponse.ok) {
+          const allProducts = await relatedResponse.json();
+          const related = allProducts
+            .filter(p => p.id !== productData.id)
+            .slice(0, 4);
+          setRelatedProducts(related);
+        }
+      } catch (err) {
+        setError(err.message);
+        setTimeout(() => {
+          router.push('/shop');
+        }, 2000);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  if (!product) {
-    return null;
+    if (productId) {
+      fetchProduct();
+    }
+  }, [productId, router]);
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-grow" style={{ paddingTop: '100px', padding: '4rem 2rem', textAlign: 'center' }}>
+          <p style={{ fontSize: '1.6rem', color: 'var(--color-text-light)' }}>{error}</p>
+          <p style={{ fontSize: '1.4rem', color: 'var(--color-text-light)', marginTop: '1rem' }}>Redirecting to shop...</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-grow" style={{ paddingTop: '100px' }}>
+          {/* Breadcrumbs Skeleton */}
+          <div className="breadcrumbs">
+            <div className="container">
+              <SkeletonLoader type="text" width="300px" height="20px" delay={0} />
+            </div>
+          </div>
+
+          {/* Product Detail Skeleton */}
+          <section className="product-detail">
+            <div className="container">
+              <div className="product-detail-grid">
+                <div className="product-gallery">
+                  <SkeletonLoader type="image" height="600px" className="skeleton-product-image" delay={0} />
+                </div>
+                <div className="product-info">
+                  <SkeletonLoader type="text" width="60%" height="40px" className="skeleton-title" delay={100} />
+                  <SkeletonLoader type="text" width="30%" height="35px" className="skeleton-price" delay={150} />
+                  <SkeletonLoader type="text" width="150px" height="25px" className="skeleton-rating" delay={200} />
+                  <SkeletonLoader type="text" count={3} className="skeleton-description" delay={250} />
+                  <SkeletonLoader type="text" width="100px" height="30px" className="skeleton-label" delay={300} />
+                  <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+                    <SkeletonLoader type="button" width="60px" height="40px" delay={350} />
+                    <SkeletonLoader type="button" width="60px" height="40px" delay={400} />
+                    <SkeletonLoader type="button" width="60px" height="40px" delay={450} />
+                  </div>
+                  <SkeletonLoader type="button" width="200px" height="50px" className="skeleton-add-cart" delay={500} />
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+        <Footer />
+      </div>
+    );
   }
 
   const handleIncreaseQuantity = () => {
@@ -247,16 +254,6 @@ export default function ProductDetail() {
                     <span className="meta-value">{product.tags.join(', ')}</span>
                   </div>
                 </div>
-                <div className="product-shipping">
-                  <p>
-                    <Image src="/assets/shipping-icon.svg" alt="Shipping" width={20} height={20} style={{ marginRight: '8px' }} />
-                    Free shipping on orders over ₱100
-                  </p>
-                  <p>
-                    <Image src="/assets/returns-icon.svg" alt="Returns" width={20} height={20} style={{ marginRight: '8px' }} />
-                    30-day returns policy
-                  </p>
-                </div>
               </div>
             </div>
           </div>
@@ -363,14 +360,12 @@ export default function ProductDetail() {
         </section>
 
         {/* Related Products */}
-        <section className="related-products">
-          <div className="container">
-            <h2 className="section-title">You May Also Like</h2>
-            <div className="product-grid">
-              {Object.values(products)
-                .filter(p => p.id !== product.id && p.category === product.category)
-                .slice(0, 4)
-                .map((relatedProduct) => (
+        {relatedProducts.length > 0 && (
+          <section className="related-products">
+            <div className="container">
+              <h2 className="section-title">You May Also Like</h2>
+              <div className="product-grid">
+                {relatedProducts.map((relatedProduct) => (
                   <div key={relatedProduct.id} className="product-card">
                     <Image
                       src={relatedProduct.image}
@@ -387,9 +382,10 @@ export default function ProductDetail() {
                     </Link>
                   </div>
                 ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
       <Footer />
     </div>

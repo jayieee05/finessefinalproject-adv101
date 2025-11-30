@@ -68,7 +68,10 @@ export default function ProductGrid({
       {/* Search Bar */}
       <ScrollAnimation animation="fadeInUp" delay={0.1} duration={0.6}>
         <div className="search-bar-modern" ref={searchBarRef}>
-          <div className="search-icon">🔍</div>
+          <svg className="search-icon" viewBox="0 0 24 24" fill="none" strokeWidth="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
           <input
             type="text"
             placeholder="Search products..."
