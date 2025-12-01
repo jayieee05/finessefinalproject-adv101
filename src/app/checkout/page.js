@@ -43,8 +43,11 @@ export default function CheckoutPage() {
     paymentMethod: 'gcash'
   });
 
-  // Redirect if not authenticated or cart is empty
+  // Redirect if not authenticated or cart is empty (but not if order is placed)
   useEffect(() => {
+    if (orderPlaced) {
+      return; // Don't redirect if order is placed
+    }
     if (!isAuthenticated()) {
       router.push('/login');
       return;
@@ -52,7 +55,7 @@ export default function CheckoutPage() {
     if (cartItems.length === 0) {
       router.push('/shop');
     }
-  }, [isAuthenticated, cartItems.length, router]);
+  }, [isAuthenticated, cartItems.length, router, orderPlaced]);
 
   const handleShippingChange = (e) => {
     setShippingInfo({
@@ -142,38 +145,48 @@ export default function CheckoutPage() {
       setIsProcessing(false);
       setOrderPlaced(true);
       clearCart();
-      
-      // Redirect to success page after 3 seconds
-      setTimeout(() => {
-        router.push('/order-success');
-      }, 3000);
     }, 2000);
   };
-
-  if (!isAuthenticated() || cartItems.length === 0) {
-    return null;
-  }
 
   if (orderPlaced) {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
-        <main className="flex-grow" style={{ paddingTop: '100px' }}>
+        <main className="flex-grow order-success-container">
           <div className="checkout-success-container">
-            <div className="checkout-success-content">
-              <div className="checkout-success-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                  <polyline points="22 4 12 14.01 9 11.01"/>
-                </svg>
+            <ScrollAnimation animation="fadeInUp" delay={0.2} duration={0.8}>
+              <div className="checkout-success-content">
+                <div className="checkout-success-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                  </svg>
+                </div>
+                <h1 className="checkout-success-title">Order Placed Successfully!</h1>
+                <p className="checkout-success-message">
+                  Thank you for your purchase. Your order has been confirmed and will be processed shortly.
+                </p>
+                <p className="checkout-success-submessage">
+                  You will receive an email confirmation shortly.
+                </p>
+                <div className="checkout-success-actions">
+                  <Link href="/shop" className="checkout-success-btn-primary">
+                    Continue Shopping
+                  </Link>
+                  <Link href="/" className="checkout-success-btn-secondary">
+                    Back to Home
+                  </Link>
+                </div>
               </div>
-              <h1 className="checkout-success-title">Order Placed Successfully!</h1>
-              <p className="checkout-success-message">Thank you for your purchase. Redirecting...</p>
-            </div>
+            </ScrollAnimation>
           </div>
         </main>
       </div>
     );
+  }
+
+  if (!isAuthenticated() || cartItems.length === 0) {
+    return null;
   }
 
   return (

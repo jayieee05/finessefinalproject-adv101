@@ -3443,6 +3443,117 @@ h1, h2, h3, h4, h5, h6 {
   width: 100%;
 }
 
+/* Forgot Password Styles */
+.forgot-password-hint {
+  font-family: var(--font-montserrat);
+  font-size: clamp(1.2rem, 1.8vw, 1.4rem);
+  color: var(--color-text-light);
+  margin-top: 0.8rem;
+  opacity: 0.7;
+  line-height: 1.5;
+}
+
+.forgot-password-success {
+  text-align: center;
+  padding: 2rem 0;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.forgot-password-success-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 2rem;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.05) 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #22c55e;
+}
+
+.forgot-password-success-icon svg {
+  width: 45px;
+  height: 45px;
+  stroke: currentColor;
+  stroke-width: 3;
+}
+
+.forgot-password-success-title {
+  font-family: var(--font-cormorant-garamond);
+  font-size: clamp(2.4rem, 4vw, 3rem);
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 1.5rem 0;
+}
+
+.forgot-password-success-message {
+  font-family: var(--font-montserrat);
+  font-size: clamp(1.5rem, 2.2vw, 1.8rem);
+  color: var(--color-text);
+  margin: 0 0 1rem 0;
+  line-height: 1.6;
+}
+
+.forgot-password-success-message strong {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.forgot-password-success-submessage {
+  font-family: var(--font-montserrat);
+  font-size: clamp(1.3rem, 2vw, 1.5rem);
+  color: var(--color-text-light);
+  margin: 0 0 3rem 0;
+  opacity: 0.8;
+  line-height: 1.6;
+}
+
+.forgot-password-success-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-top: 2rem;
+}
+
+.forgot-password-resend-btn {
+  width: 100%;
+  padding: 1.2rem 2.4rem;
+  background: transparent;
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+  border-radius: 10px;
+  font-family: var(--font-montserrat);
+  font-size: clamp(1.4rem, 2vw, 1.6rem);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.forgot-password-resend-btn:hover {
+  background: var(--color-primary);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(200, 169, 126, 0.3);
+}
+
+.forgot-password-resend-btn:active {
+  transform: translateY(0);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .login-submit-btn {
   width: 100%;
   padding: clamp(1.7rem, 3vw, 2rem);
@@ -5531,6 +5642,168 @@ h1, h2, h3, h4, h5, h6 {
 
 .skeleton-description:last-child {
   width: 80%;
+}
+
+/* Terms and Conditions Page Styles */
+.terms-container {
+  background: linear-gradient(135deg, #f5f1eb 0%, #e8e0d5 100%);
+  min-height: calc(100vh - 200px);
+  padding: 4rem 0;
+}
+
+.terms-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  padding-bottom: 2rem;
+  border-bottom: 2px solid var(--color-primary);
+}
+
+.terms-title {
+  font-family: var(--font-cormorant-garamond);
+  font-size: clamp(3rem, 6vw, 4.5rem);
+  font-weight: 600;
+  color: var(--color-secondary);
+  margin: 0 0 1rem 0;
+  line-height: 1.2;
+}
+
+.terms-subtitle {
+  font-family: var(--font-montserrat);
+  font-size: clamp(1.4rem, 2.2vw, 1.6rem);
+  color: var(--color-text-light);
+  opacity: 0.8;
+  margin: 0;
+}
+
+.terms-content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.terms-section {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: clamp(2.5rem, 4vw, 3.5rem);
+  margin-bottom: 2.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.terms-section:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.terms-section-title {
+  font-family: var(--font-cormorant-garamond);
+  font-size: clamp(2rem, 3.5vw, 2.8rem);
+  font-weight: 600;
+  color: var(--color-secondary);
+  margin: 0 0 1.5rem 0;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--color-primary);
+  position: relative;
+}
+
+.terms-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: var(--color-primary-dark);
+}
+
+.terms-text {
+  font-family: var(--font-montserrat);
+  font-size: clamp(1.4rem, 2vw, 1.6rem);
+  color: var(--color-text);
+  line-height: 1.8;
+  margin: 0 0 1.5rem 0;
+}
+
+.terms-list {
+  font-family: var(--font-montserrat);
+  font-size: clamp(1.4rem, 2vw, 1.6rem);
+  color: var(--color-text);
+  line-height: 1.8;
+  margin: 1.5rem 0;
+  padding-left: 2rem;
+  list-style: none;
+}
+
+.terms-list li {
+  position: relative;
+  padding-left: 2rem;
+  margin-bottom: 1rem;
+}
+
+.terms-list li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--color-primary);
+  font-size: 2rem;
+  line-height: 1;
+  font-weight: bold;
+}
+
+.terms-contact {
+  background: rgba(200, 169, 126, 0.1);
+  border-left: 4px solid var(--color-primary);
+  padding: 2rem;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+}
+
+.terms-contact p {
+  font-family: var(--font-montserrat);
+  font-size: clamp(1.4rem, 2vw, 1.6rem);
+  color: var(--color-text);
+  line-height: 1.8;
+  margin: 0.8rem 0;
+}
+
+.terms-contact strong {
+  color: var(--color-secondary);
+  font-weight: 600;
+}
+
+/* Terms Page Responsive */
+@media (max-width: 768px) {
+  .terms-container {
+    padding: 3rem 0;
+  }
+
+  .terms-header {
+    margin-bottom: 3rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .terms-section {
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .terms-contact {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .terms-container {
+    padding: 2rem 0;
+  }
+
+  .terms-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .terms-section {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
 }
 
 .skeleton-label {
