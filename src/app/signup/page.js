@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -14,34 +16,135 @@ export default function SignupPage() {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const { signup, isAuthenticated } = useAuth();
+  const router = useRouter();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isAuthenticated()) {
+      router.push('/');
+    }
+  }, [isAuthenticated, router]);
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
+    setError('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+    setError('');
+    setSuccess(false);
+
+    // Validation
+    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    // Name validation
+    if (formData.name.trim().length < 2) {
+      setError('Name must be at least 2 characters long');
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    // Password validation
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match!');
+      setError('Passwords do not match');
       return;
     }
     
     if (!agreeToTerms) {
-      alert('Please agree to the terms and conditions');
+      setError('Please agree to the terms and conditions');
       return;
     }
-    
-    console.log('Signup attempt:', formData);
-    // Add your signup logic here
-    alert('Signup functionality will be implemented here');
+
+    setIsLoading(true);
+
+    try {
+      const result = await signup(
+        formData.name.trim(),
+        formData.email.trim(),
+        formData.password
+      );
+      
+      if (result.success) {
+        setSuccess(true);
+        setIsLoading(false);
+        // Show success message for 3 seconds before redirecting
+        setTimeout(() => {
+          router.push('/');
+        }, 3000);
+      } else {
+        setError(result.error || 'Signup failed. Please try again.');
+        setIsLoading(false);
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="signup-loading-overlay">
+          <div className="signup-loading-content">
+            <div className="signup-loading-spinner">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" strokeOpacity="0.25"/>
+                <path d="M12 2 A10 10 0 0 1 22 12" strokeLinecap="round"/>
+              </svg>
+            </div>
+            <p className="signup-loading-text">Creating your account...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Success Greeting Modal */}
+      {success && (
+        <div className="signup-success-overlay">
+          <div className="signup-success-modal">
+            <div className="signup-success-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+            </div>
+            <h2 className="signup-success-title">Welcome to Finesse!</h2>
+            <p className="signup-success-message">
+              Your account has been created successfully, <strong>{formData.name.split(' ')[0]}</strong>!
+            </p>
+            <p className="signup-success-submessage">
+              You're being redirected to the homepage...
+            </p>
+            <div className="signup-success-progress">
+              <div className="signup-success-progress-bar"></div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <main className="login-page-container">
         <div className="login-page-wrapper">
           {/* Left Section - Welcome Message */}
@@ -89,6 +192,17 @@ export default function SignupPage() {
               </p>
 
               <form onSubmit={handleSubmit} className="login-form">
+                {error && (
+                  <div className="login-error-message">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10"/>
+                      <line x1="12" y1="8" x2="12" y2="12"/>
+                      <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    <span>{error}</span>
+                  </div>
+                )}
+
                 <div className="login-input-group">
                   <label htmlFor="name" className="login-label">
                     Full Name
@@ -107,6 +221,7 @@ export default function SignupPage() {
                       className="login-input"
                       placeholder="Enter your full name"
                       required
+                      disabled={isLoading || success}
                     />
                   </div>
                 </div>
@@ -129,6 +244,7 @@ export default function SignupPage() {
                       className="login-input"
                       placeholder="Enter your email"
                       required
+                      disabled={isLoading || success}
                     />
                   </div>
                 </div>
@@ -151,6 +267,7 @@ export default function SignupPage() {
                       className="login-input"
                       placeholder="Enter your password"
                       required
+                      disabled={isLoading || success}
                     />
                     <button
                       type="button"
@@ -158,17 +275,6 @@ export default function SignupPage() {
                       onClick={() => setShowPassword(!showPassword)}
                       aria-label={showPassword ? "Hide password" : "Show password"}
                     >
-                      {showPassword ? (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                          <circle cx="12" cy="12" r="3"/>
-                        </svg>
-                      ) : (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-                          <line x1="1" y1="1" x2="23" y2="23"/>
-                        </svg>
-                      )}
                     </button>
                   </div>
                 </div>
@@ -191,6 +297,7 @@ export default function SignupPage() {
                       className="login-input"
                       placeholder="Confirm your password"
                       required
+                      disabled={isLoading || success}
                     />
                     <button
                       type="button"
@@ -198,17 +305,6 @@ export default function SignupPage() {
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                     >
-                      {showConfirmPassword ? (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                          <circle cx="12" cy="12" r="3"/>
-                        </svg>
-                      ) : (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-                          <line x1="1" y1="1" x2="23" y2="23"/>
-                        </svg>
-                      )}
                     </button>
                   </div>
                 </div>
@@ -221,13 +317,30 @@ export default function SignupPage() {
                       onChange={(e) => setAgreeToTerms(e.target.checked)}
                       className="login-checkbox"
                       required
+                      disabled={isLoading || success}
                     />
                     <span>I agree to the <Link href="/terms" className="login-forgot-link">Terms and Conditions</Link></span>
                   </label>
                 </div>
 
-                <button type="submit" className="login-submit-btn">
-                  Sign Up
+                <button 
+                  type="submit" 
+                  className="login-submit-btn"
+                  disabled={isLoading || success}
+                >
+                  {isLoading ? (
+                    <>
+                      <svg className="login-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10" strokeOpacity="0.25"/>
+                        <path d="M12 2 A10 10 0 0 1 22 12" strokeLinecap="round"/>
+                      </svg>
+                      Creating account...
+                    </>
+                  ) : success ? (
+                    'Account Created!'
+                  ) : (
+                    'Sign Up'
+                  )}
                 </button>
               </form>
             </div>

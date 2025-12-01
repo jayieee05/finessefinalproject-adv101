@@ -7,11 +7,13 @@ import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SkeletonLoader from '@/components/SkeletonLoader';
+import { useCart } from '@/contexts/CartContext';
 
 export default function ProductDetail() {
   const params = useParams();
   const router = useRouter();
   const productId = parseInt(params.id);
+  const { addToCart, openCart } = useCart();
 
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -127,16 +129,16 @@ export default function ProductDetail() {
   };
 
   const handleAddToCart = () => {
-    // Add to cart logic here
-    console.log('Added to cart:', {
-      productId: product.id,
-      name: product.name,
-      price: product.priceValue,
+    if (!product) return;
+    
+    addToCart(product, {
       quantity,
       size: selectedSize,
       material: selectedMaterial
     });
-    alert(`${product.name} added to cart!`);
+    
+    // Open cart to show the added item
+    openCart();
   };
 
   const renderStars = (rating) => {
