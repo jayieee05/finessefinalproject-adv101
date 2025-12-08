@@ -1,12 +1,9 @@
-import { NextResponse } from 'next/server';
+const Product = require('../models/Product');
+const pool = require('../config/database');
 
-// API base URL - use backend server for database products
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-
-// Fallback products data (used if backend is unavailable)
-const fallbackProducts = {
-  1: {
-    id: 1,
+// Product data to seed
+const products = [
+  {
     name: 'Ring Of Leaves',
     image: '/assets/products/product-1-large.jpg',
     price: '₱11,333',
@@ -18,10 +15,10 @@ const fallbackProducts = {
     material: 'Gold',
     tags: ['Minimalist', 'Stackable', 'Everyday'],
     sizes: [5, 6, 7, 8, 9],
-    defaultSize: 7
+    defaultSize: 7,
+    stock: 10
   },
-  2: {
-    id: 2,
+  {
     name: 'Simple Chain Ring',
     image: '/assets/products/product-2-large.jpg',
     price: '₱5,666',
@@ -33,10 +30,10 @@ const fallbackProducts = {
     material: 'Gold',
     tags: ['Minimalist', 'Simple', 'Everyday'],
     sizes: [5, 6, 7, 8, 9],
-    defaultSize: 7
+    defaultSize: 7,
+    stock: 15
   },
-  3: {
-    id: 3,
+  {
     name: 'Tiara Ring',
     image: '/assets/products/product-3-large.jpg',
     price: '₱8,500',
@@ -48,10 +45,10 @@ const fallbackProducts = {
     material: 'Gold',
     tags: ['Elegant', 'Statement', 'Formal'],
     sizes: [5, 6, 7, 8, 9],
-    defaultSize: 7
+    defaultSize: 7,
+    stock: 8
   },
-  4: {
-    id: 4,
+  {
     name: 'Rose Ring',
     image: '/assets/products/product-4-large.jpg',
     price: '₱5,666',
@@ -63,10 +60,10 @@ const fallbackProducts = {
     material: 'Gold',
     tags: ['Delicate', 'Floral', 'Romantic'],
     sizes: [5, 6, 7, 8, 9],
-    defaultSize: 7
+    defaultSize: 7,
+    stock: 12
   },
-  5: {
-    id: 5,
+  {
     name: 'Signet Ring',
     image: '/assets/products/product-5-large.jpg',
     price: '₱5,666',
@@ -78,10 +75,10 @@ const fallbackProducts = {
     material: 'Gold',
     tags: ['Classic', 'Timeless', 'Formal'],
     sizes: [5, 6, 7, 8, 9],
-    defaultSize: 7
+    defaultSize: 7,
+    stock: 10
   },
-  6: {
-    id: 6,
+  {
     name: 'Chained Cuff',
     image: '/assets/products/productB1.jpg',
     price: '₱11,333',
@@ -93,10 +90,10 @@ const fallbackProducts = {
     material: 'Gold',
     tags: ['Bold', 'Statement', 'Modern'],
     sizes: ['One Size'],
-    defaultSize: 'One Size'
+    defaultSize: 'One Size',
+    stock: 7
   },
-  7: {
-    id: 7,
+  {
     name: 'Thin Chain',
     image: '/assets/products/productB2.jpg',
     price: '₱5,100',
@@ -108,10 +105,10 @@ const fallbackProducts = {
     material: 'Gold',
     tags: ['Delicate', 'Minimalist', 'Everyday'],
     sizes: ['One Size'],
-    defaultSize: 'One Size'
+    defaultSize: 'One Size',
+    stock: 15
   },
-  8: {
-    id: 8,
+  {
     name: 'Leafy Chain',
     image: '/assets/products/productB3.jpg',
     price: '₱5,100',
@@ -123,10 +120,10 @@ const fallbackProducts = {
     material: 'Gold',
     tags: ['Nature', 'Delicate', 'Elegant'],
     sizes: ['One Size'],
-    defaultSize: 'One Size'
+    defaultSize: 'One Size',
+    stock: 12
   },
-  9: {
-    id: 9,
+  {
     name: 'Flora Chain',
     image: '/assets/products/productB4.jpg',
     price: '₱2,266',
@@ -138,10 +135,10 @@ const fallbackProducts = {
     material: 'Gold',
     tags: ['Floral', 'Delicate', 'Feminine'],
     sizes: ['One Size'],
-    defaultSize: 'One Size'
+    defaultSize: 'One Size',
+    stock: 18
   },
-  10: {
-    id: 10,
+  {
     name: 'Arrow Cuff',
     image: '/assets/products/productB5.jpg',
     price: '₱2,833',
@@ -153,10 +150,10 @@ const fallbackProducts = {
     material: 'Gold',
     tags: ['Modern', 'Geometric', 'Bold'],
     sizes: ['One Size'],
-    defaultSize: 'One Size'
+    defaultSize: 'One Size',
+    stock: 10
   },
-  11: {
-    id: 11,
+  {
     name: 'Diamond Studs',
     image: '/assets/products/productE1.jpg',
     price: '₱11,333',
@@ -168,10 +165,10 @@ const fallbackProducts = {
     material: 'Gold',
     tags: ['Classic', 'Elegant', 'Formal'],
     sizes: ['One Size'],
-    defaultSize: 'One Size'
+    defaultSize: 'One Size',
+    stock: 6
   },
-  12: {
-    id: 12,
+  {
     name: 'Mini Hoops',
     image: '/assets/products/productE2.jpg',
     price: '₱5,100',
@@ -183,10 +180,10 @@ const fallbackProducts = {
     material: 'Gold',
     tags: ['Minimalist', 'Everyday', 'Versatile'],
     sizes: ['One Size'],
-    defaultSize: 'One Size'
+    defaultSize: 'One Size',
+    stock: 14
   },
-  13: {
-    id: 13,
+  {
     name: 'Dangling Leaves',
     image: '/assets/products/productE3.jpg',
     price: '₱3,400',
@@ -198,10 +195,10 @@ const fallbackProducts = {
     material: 'Gold',
     tags: ['Nature', 'Elegant', 'Statement'],
     sizes: ['One Size'],
-    defaultSize: 'One Size'
+    defaultSize: 'One Size',
+    stock: 11
   },
-  14: {
-    id: 14,
+  {
     name: 'Leaf Studs',
     image: '/assets/products/productE4.jpg',
     price: '₱2,266',
@@ -213,10 +210,10 @@ const fallbackProducts = {
     material: 'Gold',
     tags: ['Nature', 'Delicate', 'Minimalist'],
     sizes: ['One Size'],
-    defaultSize: 'One Size'
+    defaultSize: 'One Size',
+    stock: 16
   },
-  15: {
-    id: 15,
+  {
     name: 'Chain Drops',
     image: '/assets/products/productE5.jpg',
     price: '₱2,266',
@@ -228,10 +225,10 @@ const fallbackProducts = {
     material: 'Gold',
     tags: ['Modern', 'Geometric', 'Statement'],
     sizes: ['One Size'],
-    defaultSize: 'One Size'
+    defaultSize: 'One Size',
+    stock: 13
   },
-  16: {
-    id: 16,
+  {
     name: 'Ruby Pendant',
     image: '/assets/products/productN1.jpg',
     price: '₱14,166',
@@ -243,10 +240,10 @@ const fallbackProducts = {
     material: 'Gold',
     tags: ['Elegant', 'Luxury', 'Statement'],
     sizes: ['One Size'],
-    defaultSize: 'One Size'
+    defaultSize: 'One Size',
+    stock: 5
   },
-  17: {
-    id: 17,
+  {
     name: 'Diamond Choker',
     image: '/assets/products/productN1.jpg',
     price: '₱17,000',
@@ -258,10 +255,10 @@ const fallbackProducts = {
     material: 'Gold',
     tags: ['Luxury', 'Formal', 'Statement'],
     sizes: ['One Size'],
-    defaultSize: 'One Size'
+    defaultSize: 'One Size',
+    stock: 4
   },
-  18: {
-    id: 18,
+  {
     name: 'Heart Drop',
     image: '/assets/products/productN1.jpg',
     price: '₱11,333',
@@ -273,10 +270,10 @@ const fallbackProducts = {
     material: 'Gold',
     tags: ['Romantic', 'Elegant', 'Sentimental'],
     sizes: ['One Size'],
-    defaultSize: 'One Size'
+    defaultSize: 'One Size',
+    stock: 9
   },
-  19: {
-    id: 19,
+  {
     name: 'Leaf Pendant',
     image: '/assets/products/productN1.jpg',
     price: '₱5,100',
@@ -288,10 +285,10 @@ const fallbackProducts = {
     material: 'Gold',
     tags: ['Nature', 'Delicate', 'Elegant'],
     sizes: ['One Size'],
-    defaultSize: 'One Size'
+    defaultSize: 'One Size',
+    stock: 12
   },
-  20: {
-    id: 20,
+  {
     name: 'Initial Pendant',
     image: '/assets/products/productN1.jpg',
     price: '₱5,666',
@@ -303,60 +300,45 @@ const fallbackProducts = {
     material: 'Gold',
     tags: ['Personalized', 'Sentimental', 'Elegant'],
     sizes: ['One Size'],
-    defaultSize: 'One Size'
+    defaultSize: 'One Size',
+    stock: 10
   }
-};
+];
 
-export async function GET(request) {
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get('id');
-  const category = searchParams.get('category');
-
+async function seedDatabase() {
   try {
-    // Try to fetch from backend database first
-    let url = `${API_URL}/products`;
-    if (id) {
-      url = `${API_URL}/products/${id}`;
-    } else if (category) {
-      url = `${API_URL}/products?category=${category}`;
+    console.log('🌱 Starting database seeding...');
+
+    // Check if products already exist
+    const existingProducts = await Product.findAll();
+    if (existingProducts.length > 0) {
+      console.log('⚠️  Products already exist in database. Skipping seed.');
+      console.log(`   Found ${existingProducts.length} existing products.`);
+      return;
     }
 
-    const response = await fetch(url, {
-      cache: 'no-store' // Always fetch fresh data
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      return NextResponse.json(data);
+    // Insert products
+    for (const product of products) {
+      await Product.create(product);
+      console.log(`✅ Added: ${product.name}`);
     }
+
+    console.log(`\n🎉 Successfully seeded ${products.length} products!`);
   } catch (error) {
-    console.error('Backend products API error, using fallback:', error);
+    console.error('❌ Error seeding database:', error);
+    throw error;
+  } finally {
+    // Close database connection
+    await pool.end();
+    process.exit(0);
   }
-
-  // Fallback to hardcoded products if backend is unavailable
-  const products = fallbackProducts;
-
-  // Return single product by ID
-  if (id) {
-    const product = products[parseInt(id)];
-    if (!product) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
-      );
-    }
-    return NextResponse.json(product);
-  }
-
-  // Return products by category
-  if (category) {
-    const filteredProducts = Object.values(products).filter(
-      p => p.category === category.toLowerCase()
-    );
-    return NextResponse.json(filteredProducts);
-  }
-
-  // Return all products
-  return NextResponse.json(Object.values(products));
 }
+
+// Run seed if called directly
+if (require.main === module) {
+  seedDatabase();
+}
+
+module.exports = { seedDatabase, products };
+
 

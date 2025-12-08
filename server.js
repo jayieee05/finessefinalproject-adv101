@@ -2,6 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/auth');
+const orderRoutes = require('./routes/orders');
+const productRoutes = require('./routes/products');
+const cartRoutes = require('./routes/cart');
 const { authenticateToken } = require('./middleware/auth');
 
 // Load environment variables
@@ -19,6 +22,9 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/cart', cartRoutes);
 
 // Protected route example - verify token works
 app.get('/api/me', authenticateToken, (req, res) => {

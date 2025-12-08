@@ -1,10 +1,10 @@
 const jwt = require('jsonwebtoken');
-const { users } = require('../data/users');
+const User = require('../models/User');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
 
 // Middleware to authenticate JWT tokens
-const authenticateToken = (req, res, next) => {
+const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // Bearer <token>
 
@@ -19,7 +19,7 @@ const authenticateToken = (req, res, next) => {
     const decoded = jwt.verify(token, JWT_SECRET);
     
     // Find user and attach to request
-    const user = users.find(u => u.id === decoded.id);
+    const user = await User.findById(decoded.id);
     if (!user) {
       return res.status(401).json({ 
         success: false, 
@@ -29,10 +29,10 @@ const authenticateToken = (req, res, next) => {
 
     // Attach user to request object (without password)
     req.user = {
-      id: user.id,
+      id: user.id.toString(),
       name: user.name,
       email: user.email,
-      createdAt: user.createdAt
+      createdAt: user.created_at
     };
 
     next();

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { users } = require('../data/users');
+const User = require('../models/User');
 
 // JWT Secret - In production, use a strong secret from environment variables
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
@@ -47,7 +47,7 @@ router.post('/signup', async (req, res) => {
     }
 
     // Check if email already exists
-    const existingUser = users.find(u => u.email === email.toLowerCase());
+    const existingUser = await User.findByEmail(email.toLowerCase());
     if (existingUser) {
       return res.status(400).json({ 
         success: false, 
@@ -58,22 +58,20 @@ router.post('/signup', async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user
-    const newUser = {
-      id: Date.now().toString(),
+    // Create new user in database
+    const userId = await User.create({
       name: name.trim(),
       email: email.toLowerCase().trim(),
-      password: hashedPassword,
-      createdAt: new Date().toISOString()
-    };
+      password: hashedPassword
+    });
 
-    // Save user (in production, save to database)
-    users.push(newUser);
+    // Get the created user
+    const newUser = await User.findById(userId);
 
     // Generate JWT token
     const token = jwt.sign(
       { 
-        id: newUser.id, 
+        id: newUser.id.toString(), 
         email: newUser.email 
       },
       JWT_SECRET,
@@ -82,10 +80,10 @@ router.post('/signup', async (req, res) => {
 
     // Return user data (without password) and token
     const userResponse = {
-      id: newUser.id,
+      id: newUser.id.toString(),
       name: newUser.name,
       email: newUser.email,
-      createdAt: newUser.createdAt
+      createdAt: newUser.created_at
     };
 
     res.status(201).json({
@@ -116,7 +114,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Find user by email
-    const user = users.find(u => u.email === email.toLowerCase());
+    const user = await User.findByEmail(email.toLowerCase());
     if (!user) {
       return res.status(401).json({ 
         success: false, 
@@ -136,7 +134,7 @@ router.post('/login', async (req, res) => {
     // Generate JWT token
     const token = jwt.sign(
       { 
-        id: user.id, 
+        id: user.id.toString(), 
         email: user.email 
       },
       JWT_SECRET,
@@ -145,10 +143,10 @@ router.post('/login', async (req, res) => {
 
     // Return user data (without password) and token
     const userResponse = {
-      id: user.id,
+      id: user.id.toString(),
       name: user.name,
       email: user.email,
-      createdAt: user.createdAt
+      createdAt: user.created_at
     };
 
     res.json({
@@ -188,7 +186,7 @@ router.get('/verify', async (req, res) => {
     }
 
     const decoded = jwt.verify(token, JWT_SECRET);
-    const user = users.find(u => u.id === decoded.id);
+    const user = await User.findById(decoded.id);
 
     if (!user) {
       return res.status(401).json({ 
@@ -198,10 +196,10 @@ router.get('/verify', async (req, res) => {
     }
 
     const userResponse = {
-      id: user.id,
+      id: user.id.toString(),
       name: user.name,
       email: user.email,
-      createdAt: user.createdAt
+      createdAt: user.created_at
     };
 
     res.json({

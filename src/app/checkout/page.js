@@ -140,12 +140,86 @@ export default function CheckoutPage() {
 
     setIsProcessing(true);
 
-    // Simulate order processing
-    setTimeout(() => {
+    try {
+      // Get API URL from environment or use default
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const token = localStorage.getItem('finesse_token');
+
+      // Validate cart items
+      if (!cartItems || cartItems.length === 0) {
+        alert('Your cart is empty. Please add items before checkout.');
+        setIsProcessing(false);
+        return;
+      }
+
+      // Prepare order data with validation
+      const orderData = {
+        shippingInfo,
+        paymentInfo,
+        items: cartItems.map(item => {
+          // Ensure all required fields are present
+          if (!item.id || !item.name || !item.priceValue) {
+            throw new Error(`Invalid cart item: ${JSON.stringify(item)}`);
+          }
+          return {
+            id: item.id,
+            productId: item.id,
+            name: item.name || 'Unknown Product',
+            image: item.image || '',
+            price: item.price || `₱${item.priceValue.toLocaleString()}`,
+            priceValue: parseFloat(item.priceValue) || 0,
+            quantity: parseInt(item.quantity) || 1,
+            size: item.size || null,
+            material: item.material || 'Gold'
+          };
+        }),
+        totalAmount: getTotalPrice()
+      };
+
+      // Validate total amount
+      if (!orderData.totalAmount || orderData.totalAmount <= 0) {
+        alert('Invalid order total. Please try again.');
+        setIsProcessing(false);
+        return;
+      }
+
+      // Create order via API
+      const response = await fetch(`${API_URL}/orders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(orderData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: `Server error: ${response.status}` }));
+        console.error('Order API error:', errorData);
+        throw new Error(errorData.error || `Server error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Order response:', data);
+
+      if (data.success) {
+        setIsProcessing(false);
+        setOrderPlaced(true);
+        clearCart();
+        // Redirect to order success page after a moment
+        setTimeout(() => {
+          router.push('/order-success');
+        }, 2000);
+      } else {
+        throw new Error(data.error || 'Failed to place order');
+      }
+    } catch (error) {
+      console.error('Order error:', error);
+      console.error('Error stack:', error.stack);
       setIsProcessing(false);
-      setOrderPlaced(true);
-      clearCart();
-    }, 2000);
+      const errorMessage = error.message || 'An unexpected error occurred. Please try again.';
+      alert(`Error placing order: ${errorMessage}\n\nPlease check the console for more details.`);
+    }
   };
 
   if (orderPlaced) {
