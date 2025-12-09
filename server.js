@@ -5,6 +5,7 @@ const authRoutes = require('./routes/auth');
 const orderRoutes = require('./routes/orders');
 const productRoutes = require('./routes/products');
 const cartRoutes = require('./routes/cart');
+const adminRoutes = require('./routes/admin');
 const { authenticateToken } = require('./middleware/auth');
 
 // Load environment variables
@@ -25,6 +26,13 @@ app.use('/api/auth', authRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
+app.use('/api/admin', adminRoutes);
+
+// Debug: Log all admin routes
+console.log('Admin routes registered:');
+console.log('  DELETE /api/admin/orders/:id');
+console.log('  PUT /api/admin/orders/:id/status');
+console.log('  GET /api/admin/orders');
 
 // Protected route example - verify token works
 app.get('/api/me', authenticateToken, (req, res) => {

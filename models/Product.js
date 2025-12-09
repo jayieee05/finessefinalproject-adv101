@@ -27,21 +27,21 @@ class Product {
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-    const [result] = await pool.execute(query, [
-      name,
-      image,
-      price,
-      priceValue,
+      const [result] = await pool.execute(query, [
+        name,
+        image,
+        price,
+        priceValue,
       category,
-      description,
-      rating,
-      reviewCount,
-      material,
-      JSON.stringify(tags),
-      JSON.stringify(sizes),
+        description,
+        rating,
+        reviewCount,
+        material,
+        JSON.stringify(tags),
+        JSON.stringify(sizes),
       defaultSize,
       stock
-    ]);
+      ]);
 
     return result.insertId;
   }
@@ -113,7 +113,7 @@ class Product {
     const query = `UPDATE products SET ${updates.join(', ')} WHERE id = ?`;
     await pool.execute(query, values);
 
-    return await this.findById(id);
+      return await this.findById(id);
   }
 
   // Delete product (soft delete)

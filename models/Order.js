@@ -302,6 +302,47 @@ class Order {
     return await this.findById(id);
   }
 
+  // Delete an order
+  static async delete(id) {
+    if (!id || isNaN(id)) {
+      throw new Error('Invalid order ID provided');
+    }
+
+    const connection = await pool.getConnection();
+    try {
+      await connection.beginTransaction();
+
+      // Check if order exists first
+      const [orderCheck] = await connection.execute('SELECT id FROM orders WHERE id = ?', [id]);
+      if (orderCheck.length === 0) {
+        throw new Error('Order not found');
+      }
+
+      // First delete order items (CASCADE should handle this, but being explicit)
+      const [itemResult] = await connection.execute('DELETE FROM order_items WHERE order_id = ?', [id]);
+      console.log('Deleted order items:', itemResult.affectedRows);
+      
+      // Then delete the order
+      const [orderResult] = await connection.execute('DELETE FROM orders WHERE id = ?', [id]);
+      console.log('Deleted order:', orderResult.affectedRows);
+
+      if (orderResult.affectedRows === 0) {
+        throw new Error('Order could not be deleted');
+      }
+
+      await connection.commit();
+      console.log('Order deletion transaction committed successfully');
+      return true;
+    } catch (error) {
+      await connection.rollback();
+      console.error('Error deleting order:', error);
+      console.error('Error details:', error.message, error.code);
+      throw error;
+    } finally {
+      connection.release();
+    }
+  }
+
   // Format order data (parse JSON items)
   static formatOrder(order) {
     try {

@@ -83,6 +83,7 @@ router.post('/signup', async (req, res) => {
       id: newUser.id.toString(),
       name: newUser.name,
       email: newUser.email,
+      role: newUser.role || 'user',
       createdAt: newUser.created_at
     };
 
@@ -146,6 +147,7 @@ router.post('/login', async (req, res) => {
       id: user.id.toString(),
       name: user.name,
       email: user.email,
+      role: user.role || 'user',
       createdAt: user.created_at
     };
 
@@ -199,6 +201,7 @@ router.get('/verify', async (req, res) => {
       id: user.id.toString(),
       name: user.name,
       email: user.email,
+      role: user.role || 'user',
       createdAt: user.created_at
     };
 

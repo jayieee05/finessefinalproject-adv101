@@ -14,6 +14,17 @@ export function AuthProvider({ children }) {
   // Verify token and load user on mount
   useEffect(() => {
     const verifyToken = async () => {
+      // Try to load from localStorage first
+      const savedUser = localStorage.getItem('finesse_user');
+      if (savedUser) {
+        try {
+          const parsedUser = JSON.parse(savedUser);
+          setUser(parsedUser);
+        } catch (error) {
+          console.error('Error parsing saved user:', error);
+        }
+      }
+
       const token = localStorage.getItem('finesse_token');
       
       if (!token) {
@@ -33,16 +44,24 @@ export function AuthProvider({ children }) {
         const data = await response.json();
 
         if (data.success && data.user) {
-          setUser(data.user);
+          // Ensure role is included
+          const userWithRole = {
+            ...data.user,
+            role: data.user.role || 'user'
+          };
+          setUser(userWithRole);
+          localStorage.setItem('finesse_user', JSON.stringify(userWithRole));
         } else {
           // Token is invalid, remove it
           localStorage.removeItem('finesse_token');
           localStorage.removeItem('finesse_user');
+          setUser(null);
         }
       } catch (error) {
         console.error('Error verifying token:', error);
         localStorage.removeItem('finesse_token');
         localStorage.removeItem('finesse_user');
+        setUser(null);
       } finally {
         setIsLoading(false);
       }
@@ -132,6 +151,10 @@ export function AuthProvider({ children }) {
     return user !== null;
   };
 
+  const isOwner = () => {
+    return user !== null && user.role === 'owner';
+  };
+
   // Get token for API requests
   const getToken = () => {
     return localStorage.getItem('finesse_token');
@@ -146,6 +169,7 @@ export function AuthProvider({ children }) {
         signup,
         logout,
         isAuthenticated,
+        isOwner,
         getToken
       }}
     >

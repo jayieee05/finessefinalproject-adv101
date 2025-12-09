@@ -3,12 +3,12 @@ const pool = require('../config/database');
 class User {
   // Create a new user
   static async create(userData) {
-    const { name, email, password } = userData;
+    const { name, email, password, role = 'user' } = userData;
     const query = `
-      INSERT INTO users (name, email, password)
-      VALUES (?, ?, ?)
+      INSERT INTO users (name, email, password, role)
+      VALUES (?, ?, ?, ?)
     `;
-    const [result] = await pool.execute(query, [name, email, password]);
+    const [result] = await pool.execute(query, [name, email, password, role]);
     return result.insertId;
   }
 
@@ -21,7 +21,7 @@ class User {
 
   // Find user by ID
   static async findById(id) {
-    const query = 'SELECT id, name, email, created_at FROM users WHERE id = ?';
+    const query = 'SELECT id, name, email, role, created_at FROM users WHERE id = ?';
     const [rows] = await pool.execute(query, [id]);
     return rows[0] || null;
   }
@@ -47,9 +47,21 @@ class User {
 
   // Get all users (for admin purposes)
   static async findAll() {
-    const query = 'SELECT id, name, email, created_at FROM users ORDER BY created_at DESC';
+    const query = 'SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC';
     const [rows] = await pool.execute(query);
     return rows;
+  }
+
+  // Update user role
+  static async updateRole(id, role) {
+    const query = 'UPDATE users SET role = ? WHERE id = ?';
+    await pool.execute(query, [role, id]);
+    return await this.findById(id);
+  }
+
+  // Check if user is owner
+  static isOwner(user) {
+    return user && user.role === 'owner';
   }
 }
 

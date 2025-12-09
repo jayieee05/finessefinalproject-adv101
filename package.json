@@ -11,7 +11,8 @@
     "dev:all": "concurrently \"npm run server\" \"npm run dev\"",
     "db:init": "node database/init.js",
     "db:seed": "node database/seed.js",
-    "db:setup": "npm run db:init && npm run db:seed"
+    "db:setup": "npm run db:init && npm run db:seed",
+    "db:migrate": "node -e \"const mysql = require('mysql2/promise'); const fs = require('fs'); const dotenv = require('dotenv'); dotenv.config(); (async () => { const conn = await mysql.createConnection({ host: process.env.DB_HOST || 'localhost', user: process.env.DB_USER || 'root', password: process.env.DB_PASSWORD || '', database: process.env.DB_NAME || 'finesse_db' }); const sql = fs.readFileSync('database/migrate_add_role.sql', 'utf8'); const statements = sql.split(';').filter(s => s.trim() && !s.trim().startsWith('--') && !s.trim().startsWith('USE')); for (const stmt of statements) { if (stmt.trim()) await conn.query(stmt); } await conn.end(); console.log('Migration complete'); })();\""
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
