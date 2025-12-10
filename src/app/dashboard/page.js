@@ -17,6 +17,7 @@ export default function DashboardPage() {
   const [updatingStatus, setUpdatingStatus] = useState({});
   const [pageLoaded, setPageLoaded] = useState(false);
   const [deletingOrder, setDeletingOrder] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(null); // { orderId, orderNumber }
 
   useEffect(() => {
     // Wait for auth to load
@@ -188,14 +189,15 @@ export default function DashboardPage() {
   ];
 
   const handleDeleteOrder = async (orderId, orderNumber) => {
-    // Confirm deletion
-    const confirmed = window.confirm(
-      `Are you sure you want to delete order ${orderNumber}? This action cannot be undone.`
-    );
+    // Show confirmation modal
+    setConfirmDelete({ orderId, orderNumber });
+  };
 
-    if (!confirmed) {
-      return;
-    }
+  const confirmDeleteAction = async () => {
+    if (!confirmDelete) return;
+
+    const { orderId, orderNumber } = confirmDelete;
+    setConfirmDelete(null);
 
     // Ensure orderId is a number
     const numericOrderId = Number(orderId);
@@ -271,6 +273,10 @@ export default function DashboardPage() {
     } finally {
       setDeletingOrder(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setConfirmDelete(null);
   };
 
   // Show loading or access denied
@@ -503,6 +509,40 @@ export default function DashboardPage() {
           </div>
         </div>
       </main>
+
+      {/* Delete Confirmation Modal */}
+      {confirmDelete && (
+        <div className="delete-confirm-overlay" onClick={cancelDelete}>
+          <div className="delete-confirm-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="delete-confirm-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+              </svg>
+            </div>
+            <h2 className="delete-confirm-title">Delete Order?</h2>
+            <p className="delete-confirm-message">
+              Are you sure you want to delete order <strong>{confirmDelete.orderNumber}</strong>? 
+              This action cannot be undone.
+            </p>
+            <div className="delete-confirm-actions">
+              <button
+                onClick={cancelDelete}
+                className="delete-confirm-cancel-btn"
+                disabled={deletingOrder === Number(confirmDelete.orderId)}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDeleteAction}
+                className="delete-confirm-delete-btn"
+                disabled={deletingOrder === Number(confirmDelete.orderId)}
+              >
+                {deletingOrder === Number(confirmDelete.orderId) ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

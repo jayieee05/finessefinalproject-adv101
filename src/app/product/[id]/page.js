@@ -17,12 +17,13 @@ export default function ProductDetail() {
 
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
-  const [selectedSize, setSelectedSize] = useState(7);
+  const [selectedSize, setSelectedSize] = useState(null);
   const [selectedMaterial, setSelectedMaterial] = useState('Gold');
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [sizeError, setSizeError] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -36,7 +37,9 @@ export default function ProductDetail() {
         
         const productData = await response.json();
         setProduct(productData);
-        setSelectedSize(productData.defaultSize || 7);
+        // Don't auto-select size - require user to explicitly click
+        // This ensures validation works properly
+        setSelectedSize(null);
         
         // Fetch related products
         const relatedResponse = await fetch(`/api/products?category=${productData.category}`);
@@ -128,9 +131,39 @@ export default function ProductDetail() {
     }
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e) => {
+    // Prevent execution if button is disabled
+    if (e && e.currentTarget && e.currentTarget.disabled) {
+      return;
+    }
+    
     if (!product) return;
     
+    // STRICT validation: size selection is REQUIRED if product has sizes
+    if (product.sizes && Array.isArray(product.sizes) && product.sizes.length > 0) {
+      // Check if size is null, undefined, empty string, or not in the available sizes
+      const hasValidSize = selectedSize !== null && 
+                          selectedSize !== undefined && 
+                          selectedSize !== '' && 
+                          product.sizes.includes(selectedSize);
+      
+      if (!hasValidSize) {
+        setSizeError(true);
+        // Scroll to size selection area
+        setTimeout(() => {
+          const sizeElement = document.querySelector('.option-group');
+          if (sizeElement) {
+            sizeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
+        return; // STOP execution - don't add to cart
+      }
+    }
+    
+    // Clear any previous size error
+    setSizeError(false);
+    
+    // Only proceed if validation passed
     addToCart(product, {
       quantity,
       size: selectedSize,
@@ -205,18 +238,28 @@ export default function ProductDetail() {
                 </div>
                 <div className="product-options">
                   <div className="option-group">
-                    <label>Size</label>
+                    <label>Size {product.sizes && product.sizes.length > 0 && <span className="required-asterisk">*</span>}</label>
                     <div className="option-buttons">
-                      {product.sizes.map((size) => (
-                        <button
-                          key={size}
-                          className={`option-btn ${selectedSize === size ? 'active' : ''}`}
-                          onClick={() => setSelectedSize(size)}
-                        >
-                          {size}
-                        </button>
-                      ))}
+                      {product.sizes && product.sizes.length > 0 ? (
+                        product.sizes.map((size) => (
+                          <button
+                            key={size}
+                            className={`option-btn ${selectedSize === size ? 'active' : ''} ${sizeError ? 'error' : ''}`}
+                            onClick={() => {
+                              setSelectedSize(size);
+                              setSizeError(false);
+                            }}
+                          >
+                            {size}
+                          </button>
+                        ))
+                      ) : (
+                        <span className="no-sizes-text">No sizes available</span>
+                      )}
                     </div>
+                    {sizeError && (
+                      <p className="size-error-message">Please select a size before adding to cart</p>
+                    )}
                   </div>
                   <div className="option-group">
                     <label>Material</label>
@@ -242,7 +285,11 @@ export default function ProductDetail() {
                     />
                     <button onClick={handleIncreaseQuantity}>+</button>
                   </div>
-                  <button className="btn-primary add-to-cart-btn" onClick={handleAddToCart}>
+                  <button 
+                    className={`btn-primary add-to-cart-btn ${(product.sizes && product.sizes.length > 0 && (selectedSize === null || selectedSize === undefined || !product.sizes.includes(selectedSize))) ? 'disabled' : ''}`} 
+                    onClick={handleAddToCart}
+                    disabled={product.sizes && product.sizes.length > 0 && (selectedSize === null || selectedSize === undefined || !product.sizes.includes(selectedSize))}
+                  >
                     Add to Cart
                   </button>
                 </div>
